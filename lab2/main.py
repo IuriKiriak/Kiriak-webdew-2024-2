@@ -67,18 +67,27 @@ def calc():
 def check_phone():
     error = None
     formatted_phone = None
+    white_list = [' ', '(', ')', '-', '.', '+']
+
     if request.method == 'POST':
         phone = request.form['phone']
-        # Удаляем все символы, кроме цифр
+
+        phone_check = True
+        for num in phone:
+            if not num.isdigit():
+                if num not in white_list:
+                    phone_check = False
+
         phone_digits = ''.join(filter(str.isdigit, phone))
-        # Проверяем длину номера телефона
+
         if len(phone_digits) < 10 or len(phone_digits) > 11:
             error = 'Недопустимый ввод. Неверное количество цифр.'
+        elif phone_check == 0:
+            error = "номер содержит не допустимые символы"
         else:
             formatted_phone = format_phone(phone_digits)
-    return render_template('phone_form.html', error=error, formatted_phone=formatted_phone)
 
-# Функция для форматирования номера телефона
+    return render_template('phone_form.html', error=error, formatted_phone=formatted_phone)
 def format_phone(phone):
     if phone.startswith('7'):
         phone = '8' + phone[1:]
